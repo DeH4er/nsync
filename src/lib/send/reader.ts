@@ -4,7 +4,7 @@ export type Reader = {
   readonly read: (path: string) => Promise<Buffer>;
 };
 
-export function createReader() {
+export function createReader(): Reader {
   return {
     read,
   };

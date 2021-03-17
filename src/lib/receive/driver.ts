@@ -1,7 +1,11 @@
 import { Packet } from '../shared/packet';
 
-import {Action} from './action';
+import { Action } from './action';
 import { Receiver } from './receiver';
+
+export type Driver = {
+  readonly start: () => void;
+};
 
 export function createDriver({
   action,
@@ -9,7 +13,7 @@ export function createDriver({
 }: {
   readonly action: Action;
   readonly receiver: Receiver;
-}) {
+}): Driver {
   return {
     start,
   };

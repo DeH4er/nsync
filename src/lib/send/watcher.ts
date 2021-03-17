@@ -14,7 +14,7 @@ export function createWatcher({
   ignored,
 }: {
   readonly filepath: string;
-  readonly ignored?: any;
+  readonly ignored?: unknown;
 }): Watcher {
   let watcher: FSWatcher;
 

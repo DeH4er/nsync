@@ -13,7 +13,7 @@ export function createReceiver({
 }: {
   readonly host: string;
   readonly port: number;
-}) {
+}): Receiver {
   const socket = new Socket();
 
   return {

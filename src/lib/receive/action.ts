@@ -36,7 +36,7 @@ export function createAction({ filepath }: { readonly filepath: string }) {
 
   function _rm(path: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      rimraf(path, (err: any) => {
+      rimraf(path, (err: Error) => {
         if (err) {
           reject(err);
         } else {

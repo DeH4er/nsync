@@ -10,7 +10,7 @@ export function start({
   readonly host: string;
   readonly port: number;
   readonly filepath: string;
-}) {
+}): void {
   const receiver = createReceiver({ host, port });
   const action = createAction({ filepath });
   const driver = createDriver({ action, receiver });

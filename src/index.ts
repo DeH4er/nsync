@@ -1,4 +1,4 @@
-import { parseArgs } from './lib/args';
+import { parseArgs } from './args';
 import { start as startReceive } from './lib/receive';
 import { start as startSend } from './lib/send';
 
@@ -10,25 +10,31 @@ function getCurrentDir(): string {
 }
 
 function getFilePath(): string {
-  if (args._ instanceof Array) {
+  if (args._.length > 0) {
     return args._[0];
-  } else if (args._) {
-    return args._;
   } else {
     return getCurrentDir();
   }
 }
 
-if (args.server) {
+function startServer(): void {
   startSend({
     filepath: getFilePath(),
     host: args.host,
     port: args.port,
   });
-} else {
+}
+
+function startClient(): void {
   startReceive({
     filepath: getFilePath(),
     host: args.host,
     port: args.port,
   });
+}
+
+if (args.server) {
+  startServer();
+} else {
+  startClient();
 }

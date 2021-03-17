@@ -11,10 +11,10 @@ export function start({
   port,
 }: {
   readonly filepath: string;
-  readonly ignored?: any;
+  readonly ignored?: unknown;
   readonly host: string;
   readonly port: number;
-}) {
+}): void {
   const sender = createSender({ host, port });
   const reader = createReader();
   const remote = createRemote({ sender, reader });
