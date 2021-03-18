@@ -3,14 +3,15 @@ import { createDriver } from './driver';
 import { createReceiver } from './receiver';
 
 export function start({
+  filepath,
   host,
   port,
-  filepath,
 }: {
+  readonly filepath: string;
   readonly host: string;
   readonly port: number;
-  readonly filepath: string;
 }): void {
+  console.log(`Starting client at ${filepath} ${host}:${port}`);
   const receiver = createReceiver({ host, port });
   const action = createAction({ filepath });
   const driver = createDriver({ action, receiver });

@@ -1,3 +1,5 @@
+import { relative } from 'path';
+
 import { FSWatcher, watch } from 'chokidar';
 
 export type Watcher = {
@@ -34,8 +36,8 @@ export function createWatcher({
     });
   }
 
-  function on(event: string, handler: (...args: readonly string[]) => void): void {
-    watcher.on(event, handler);
+  function on(event: string, handler: (path: string) => void): void {
+    watcher.on(event, (path: string) => handler(relative(filepath, path)));
   }
 
   async function stop(): Promise<void> {

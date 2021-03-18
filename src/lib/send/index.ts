@@ -15,6 +15,7 @@ export function start({
   readonly host: string;
   readonly port: number;
 }): void {
+  console.log(`Starting server at ${filepath} ${host}:${port}`)
   const sender = createSender({ host, port });
   const reader = createReader();
   const remote = createRemote({ sender, reader });
