@@ -25,4 +25,3 @@ The server will send commands to client on changes in server directory.
 ## What needs to be done
 * Check whether all files are synced on client connection.
 * Create queue for fs actions.
-* Send packets in chunks

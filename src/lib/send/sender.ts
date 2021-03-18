@@ -1,7 +1,7 @@
 import { createServer, Socket } from 'net';
 
-import { Packet, serializePacket } from '../shared/packet';
-
+import { Packet, PACKET_SIZE_LENGTH, serializePacket } from '../shared/packet';
+import { chunked } from '../shared/utils';
 export type Sender = {
   readonly start: () => void;
   readonly send: (packet: Packet) => void;
@@ -18,6 +18,7 @@ export function createSender({
   readonly port: number;
 }): Sender {
   let clients: readonly Socket[] = [];
+  const MAX_PACKET_SIZE = 2 ** 15;
 
   return {
     start,
@@ -29,9 +30,11 @@ export function createSender({
       console.log(`Client connected ${sock.remoteAddress}:${sock.remotePort}`);
 
       sock.on('close', () => {
-        console.log(`Client disconnected ${sock.remoteAddress}:${sock.remotePort}`);
-        clients = clients.filter(c => c !== sock);
-      })
+        console.log(
+          `Client disconnected ${sock.remoteAddress}:${sock.remotePort}`
+        );
+        clients = clients.filter((c) => c !== sock);
+      });
 
       clients = [...clients, sock];
     }).listen(port, host);
@@ -40,9 +43,13 @@ export function createSender({
 
   function send(packet: Packet): void {
     const serialized = serializePacket(packet);
+    console.log(`Sending packet: ${serialized.length - PACKET_SIZE_LENGTH}B`);
+    const chunks = chunked(serialized, MAX_PACKET_SIZE);
 
     clients.forEach((client: Socket) => {
-      client.write(serialized);
+      chunks.forEach((chunk) => {
+        client.write(chunk);
+      });
     });
   }
 }

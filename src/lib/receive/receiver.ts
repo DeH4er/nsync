@@ -1,6 +1,10 @@
 import { Socket } from 'net';
 
-import { deserializePacket, Packet } from '../shared/packet';
+import {
+  deserializePacket,
+  Packet,
+  PACKET_SIZE_LENGTH,
+} from '../shared/packet';
 
 export type Receiver = {
   readonly start: () => void;
@@ -15,6 +19,9 @@ export function createReceiver({
   readonly port: number;
 }): Receiver {
   const socket = new Socket();
+  let isFirstPacket = true;
+  let bytesLeft = 0;
+  let buffer: Buffer;
 
   return {
     start,
@@ -33,9 +40,24 @@ export function createReceiver({
 
   function onPacket(handler: (packet: Packet) => void) {
     socket.on('data', (data: Uint8Array) => {
-      const packet = deserializePacket(data)
-      console.log(packet);
-      handler(packet);
+      if (isFirstPacket) {
+        bytesLeft = Buffer.from(data.slice(0, PACKET_SIZE_LENGTH)).readInt32BE(
+          0
+        );
+        buffer = Buffer.from(data.slice(PACKET_SIZE_LENGTH));
+        isFirstPacket = false;
+      } else {
+        buffer = Buffer.concat([buffer, data]);
+      }
+
+      bytesLeft -= data.length;
+      if (bytesLeft <= 0) {
+        isFirstPacket = true;
+        const packet = deserializePacket(buffer);
+        console.log(`Packet received: ${buffer.length}B`);
+        console.log(packet);
+        handler(packet);
+      }
     });
   }
 }

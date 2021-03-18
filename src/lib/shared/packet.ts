@@ -1,4 +1,4 @@
-import { deserialize, serialize } from 'bson';
+import { calculateObjectSize, deserialize, serializeWithBufferAndIndex } from 'bson';
 
 export type Packet =
   | {
@@ -19,8 +19,14 @@ export type Packet =
       readonly path: string;
     };
 
+export const PACKET_SIZE_LENGTH = 32; // 2 ** 32 -> 4GB
+
 export function serializePacket(packet: Packet): Uint8Array {
-  return serialize(packet);
+  const packetSize = calculateObjectSize(packet);
+  const buf = Buffer.alloc(PACKET_SIZE_LENGTH + packetSize);
+  buf.writeInt32BE(PACKET_SIZE_LENGTH + packetSize);
+  serializeWithBufferAndIndex(packet, buf, { index: PACKET_SIZE_LENGTH});
+  return buf;
 }
 
 export function deserializePacket(packet: Uint8Array): Packet {
